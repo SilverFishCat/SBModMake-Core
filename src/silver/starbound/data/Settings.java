@@ -40,8 +40,30 @@ public class Settings {
 	private File _textEditor;
 	private File _imageEditor;
 	private OperatingSystem _operationSystem;
-	
 	private Architecture _architecture;
+	
+	/**
+	 * Create a new blank settings object.
+	 */
+	public Settings(){
+		_starboundFolder = null;
+		_textEditor = null;
+		_imageEditor = null;
+		_operationSystem = OperatingSystem.UNKNOWN;
+		_architecture = Architecture.UNKNOWN;
+	}
+	/**
+	 * Shallow copy an existing settings object.
+	 * 
+	 * @param toCopy The settings to copy
+	 */
+	public Settings(Settings toCopy){
+		setTextEditor(toCopy.getTextEditor());
+		setStarboundFolder(toCopy.getStarboundFolder());
+		setArchitecture(toCopy.getArchitecture());
+		setOperationSystem(toCopy.getOperationSystem());
+		setImageEditor(toCopy.getImageEditor());
+	}
 	
 	/**
 	 * Get the starbound directory.
@@ -189,13 +211,6 @@ public class Settings {
 	 * Makes a shallow copy of this settings object.
 	 */
 	public Settings clone(){
-		Settings clone = new Settings();
-		
-		clone.setTextEditor(getTextEditor());
-		clone.setStarboundFolder(getStarboundFolder());
-		clone.setArchitecture(getArchitecture());
-		clone.setOperationSystem(getOperationSystem());
-		
-		return clone;
+		return new Settings(this);
 	}
 }

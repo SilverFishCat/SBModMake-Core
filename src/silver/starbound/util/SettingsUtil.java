@@ -33,6 +33,7 @@ public class SettingsUtil {
 	private static final String PREFERENCES_NODE_NAME = "SBModMake";
 	private static final String PREFERENCES_STARBOUND_FOLDER_KEY = "starbound_folder";
 	private static final String PREFERENCES_TEXT_EDIOR_KEY = "text_editor";
+	private static final String PREFERENCES_IMAGE_EDIOR_KEY = "image_editor";
 	private static final String PREFERENCES_OPERATING_SYSTEM_KEY = "operating_system";
 	private static final String PREFERENCES_ARCHITECTURE_KEY = "architecture";
 	
@@ -58,6 +59,12 @@ public class SettingsUtil {
 			result.setTextEditor(new File(textEditorPath));
 		else
 			result.setTextEditor(null);
+		
+		String imageEditorPath = node.get(PREFERENCES_IMAGE_EDIOR_KEY, null);
+		if(imageEditorPath != null)
+			result.setImageEditor(new File(imageEditorPath));
+		else
+			result.setImageEditor(null);
 		
 		String operatingSystemString = node.get(PREFERENCES_OPERATING_SYSTEM_KEY, OSUtil.getOS().toString());
 		if(operatingSystemString != null){
@@ -100,6 +107,9 @@ public class SettingsUtil {
 
 		if(settings.getTextEditor() != null)
 			node.put(PREFERENCES_TEXT_EDIOR_KEY, settings.getTextEditor().getAbsolutePath());
+
+		if(settings.getTextEditor() != null)
+			node.put(PREFERENCES_IMAGE_EDIOR_KEY, settings.getImageEditor().getAbsolutePath());
 		
 		if(settings.getOperationSystem() != null)
 			node.put(PREFERENCES_OPERATING_SYSTEM_KEY, settings.getOperationSystem().toString());
