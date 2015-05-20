@@ -27,6 +27,7 @@ import java.io.File;
 import silver.starbound.util.OSUtil.Architecture;
 import silver.starbound.util.OSUtil.OperatingSystem;
 import silver.starbound.util.PathUtil;
+import silver.starbound.util.SettingsUtil;
 
 /**
  * An object containing all the user settings for the ModMake application.
@@ -36,6 +37,30 @@ import silver.starbound.util.PathUtil;
  *
  */
 public class Settings {
+	private static Settings _currentSettings;
+	/**
+	 * Get the current settings.
+	 * 
+	 * @return The current settings
+	 */
+	public static Settings getCurrentSetttings(){
+		return _currentSettings;
+	}
+	/**
+	 * Set new settings.
+	 * 
+	 * @param newSettings The new settings to set
+	 */
+	public static void setCurrentSettings(Settings newSettings){
+		_currentSettings = newSettings;
+	}
+	/**
+	 * Load the saved settings from the preferences as the current settings.
+	 */
+	public static void loadSettings(){
+		_currentSettings = SettingsUtil.loadSettings();
+	}
+	
 	private File _starboundFolder;
 	private File _textEditor;
 	private File _imageEditor;
