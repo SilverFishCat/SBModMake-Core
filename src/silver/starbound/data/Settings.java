@@ -43,7 +43,7 @@ public class Settings {
 	 * 
 	 * @return The current settings
 	 */
-	public static Settings getCurrentSetttings(){
+	public static Settings getCurrentSettings(){
 		return _currentSettings;
 	}
 	/**
