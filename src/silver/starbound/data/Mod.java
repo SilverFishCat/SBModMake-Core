@@ -35,6 +35,7 @@ import com.google.gson.JsonPrimitive;
 
 /**
  * A container for mod details.
+ * Has an underlying modinfo object that holds mod metadata.
  * 
  * @author SilverFishCat
  *
@@ -44,29 +45,28 @@ public class Mod {
 	private static final String JSON_FOLDER_PATH_KEY = "folder";
 	private static final String JSON_MOD_INFO_KEY = "modinfo_filename";
 	
-	private String _name;
 	private File _folder;
-	private String _modInfo;
+	private String _modInfoFilename;
+	private ModInfo _modInfo;
 	
 	/**
 	 * Create a new mod details container.
 	 */
 	public Mod(){
-		_name = null;
-		_folder = null;
-		_modInfo = null;
+		this(null, null, null);
 	}
 	/**
 	 * Create a new mod details container.
 	 * 
 	 * @param name The name of the mod
 	 * @param folder The folder of the mod
-	 * @param modInfo The name of the modinfo file
+	 * @param modInfoFilename The name of the modinfo file
 	 */
-	public Mod(String name, File folder, String modInfo){
-		_name = name;
-		_folder = folder;
-		_modInfo = modInfo;
+	public Mod(String name, File folder, String modInfoFilename){
+		_modInfo = new ModInfo();
+		setName(name);
+		setFolder(folder);
+		setModInfoFilename(modInfoFilename);
 	}
 	
 	/**
@@ -75,7 +75,7 @@ public class Mod {
 	 * @return The mod's name
 	 */
 	public String getName() {
-		return _name;
+		return _modInfo.getModName();
 	}
 	/**
 	 * Get the mod's folder.
@@ -91,8 +91,8 @@ public class Mod {
 	 * 
 	 * @return The name of the modinfo file, if set
 	 */
-	public String getModInfo() {
-		return _modInfo;
+	public String getModInfoFilename() {
+		return _modInfoFilename;
 	}
 	/**
 	 * Get the mod info file.
@@ -100,10 +100,18 @@ public class Mod {
 	 * @return The mod's modinfo file, or null if the mod info file can not be resolved
 	 */
 	public File getModinfoFile(){
-		if(getFolder() != null && getModInfo() != null)
-			return new File(getFolder(), getModInfo());
+		if(getFolder() != null && getModInfoFilename() != null)
+			return new File(getFolder(), getModInfoFilename());
 		else
 			return null;
+	}
+	/**
+	 * Get the underlying modinfo object.
+	 * 
+	 * @return The underlying modinfo object
+	 */
+	public ModInfo getModInfo(){
+		return _modInfo;
 	}
 	
 	/**
@@ -112,7 +120,7 @@ public class Mod {
 	 * @param name The new name of the mod
 	 */
 	public void setName(String name) {
-		this._name = name;
+		this._modInfo.setModName(name);
 	}
 	/**
 	 * Set the folder of the mod.
@@ -125,10 +133,10 @@ public class Mod {
 	/**
 	 * Set the modinfo file name.
 	 * 
-	 * @param modInfo The name of the mod info
+	 * @param modInfoFilename The name of the mod info file
 	 */
-	public void setModInfo(String modInfo) {
-		this._modInfo = modInfo;
+	public void setModInfoFilename(String modInfoFilename) {
+		this._modInfoFilename = modInfoFilename;
 	}
 	
 	/**
@@ -137,7 +145,7 @@ public class Mod {
 	 * @return True if the name is not null or empty, false otherwise
 	 */
 	public boolean isNameValid(){
-		return _name != null && !_name.trim().isEmpty();
+		return getName() != null && !getName().trim().isEmpty();
 	}
 	/**
 	 * Check if the folder is valid directory.
@@ -153,7 +161,7 @@ public class Mod {
 	 * @return True if the mod folder is valid and the modinfo filename is valid
 	 */
 	public boolean isModInfoValid(){
-		return isFolderValid() && _modInfo != null && !_modInfo.trim().isEmpty();
+		return isFolderValid() && _modInfoFilename != null && !_modInfoFilename.trim().isEmpty();
 	}
 	
 	/**
@@ -163,7 +171,7 @@ public class Mod {
 	 */
 	public String getDefaultModSaveFileName(){
 		if(isNameValid())
-			return _name + ".save";
+			return getName() + ".save";
 		else
 			return "mod.save";
 	}
@@ -177,7 +185,7 @@ public class Mod {
 		
 		result.add(JSON_NAME_KEY, new JsonPrimitive(getName()));
 		result.add(JSON_FOLDER_PATH_KEY, new JsonPrimitive(getFolder().getAbsolutePath()));
-		result.add(JSON_MOD_INFO_KEY, new JsonPrimitive(getModInfo()));
+		result.add(JSON_MOD_INFO_KEY, new JsonPrimitive(getModInfoFilename()));
 		
 		return result;
 	}
