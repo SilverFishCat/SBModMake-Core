@@ -29,6 +29,12 @@ import silver.starbound.data.Settings;
 import silver.starbound.util.OSUtil.Architecture;
 import silver.starbound.util.OSUtil.OperatingSystem;
 
+/**
+ * Utillites for handling saving and loading settings.
+ * 
+ * @author SilverFishCat
+ *
+ */
 public class SettingsUtil {
 	private static final String PREFERENCES_NODE_NAME = "SBModMake";
 	private static final String PREFERENCES_STARBOUND_FOLDER_KEY = "starbound_folder";

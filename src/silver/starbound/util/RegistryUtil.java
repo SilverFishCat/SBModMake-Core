@@ -24,6 +24,12 @@ package silver.starbound.util;
 
 import java.io.StringWriter;
 
+/**
+ * General windows registry utillities.
+ * 
+ * @author SilverFishCat
+ *
+ */
 public class RegistryUtil {
 	private static final String STARBOUND_REGISTRY_KEY = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Steam App 211820"; 
 	private static final String STARBOUND_FOLDER_REGISTRY_MEMBER = "InstallLocation";
