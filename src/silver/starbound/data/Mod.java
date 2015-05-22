@@ -27,7 +27,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -155,14 +157,19 @@ public class Mod {
 	public boolean isFolderValid(){
 		return getFolder() != null && getFolder().isDirectory();
 	}
+	public boolean isModInfoFilenameValid(){
+		return _modInfoFilename != null && !_modInfoFilename.trim().isEmpty();
+	}
 	/**
 	 * Check if the modinfo filename is valid.
 	 * 
 	 * @return True if the mod folder is valid and the modinfo filename is valid
 	 */
 	public boolean isModInfoValid(){
-		return isFolderValid() && _modInfoFilename != null && !_modInfoFilename.trim().isEmpty();
+		return isFolderValid() && isModInfoFilenameValid();
 	}
+	
+	// --- OLD SAVE MECHANISM ---
 	
 	/**
 	 * Generate a default save name for the mod.
@@ -288,5 +295,63 @@ public class Mod {
 		else{
 			throw new IllegalArgumentException("Can not read file");
 		}
+	}
+	
+	// --- FILE CREATION --- ///
+	
+	/**
+	 * Check if the mod directory can be created.
+	 * 
+	 * @return True if the mod directory can be created
+	 */
+	public boolean isDirectoryReadToBuild(){
+		return _folder != null && new File(_folder.getParent()).isDirectory();
+	}
+	/**
+	 * Check if the mod structure can be built.
+	 * 
+	 * @return True if the mod structure can be built
+	 */
+	public boolean isReadyToBuild(){
+		return isNameValid() && isDirectoryReadToBuild() && isModInfoFilenameValid();
+	}
+	/**
+	 * Build the mod structure including the mod directory and modinfo file. 
+	 * 
+	 * @throws JsonIOException if there was a problem writing the modinfo json file
+	 * @throws IOException if there was a problem opening the file for writing or creating directories
+	 */
+	public void buildModStructure() throws JsonIOException, IOException{
+		createModDirectory();
+		createModInfoFile();
+	}
+	/**
+	 * Create the mod directory.
+	 * 
+	 * @throws IOException if the directory can not be created
+	 */
+	public void createModDirectory() throws IOException{
+		if(!isDirectoryReadToBuild())
+			throw new IllegalArgumentException("Invalid directory");
+		
+		getFolder().mkdirs();
+	}
+	/**
+	 * Create the mod info file.
+	 * 
+	 * @throws JsonIOException if there was a problem writing the modinfo json file
+	 * @throws IOException if there was a problem opening the file for writing
+	 */
+	public void createModInfoFile() throws JsonIOException, IOException{
+		if(!isModInfoFilenameValid())
+			throw new IllegalArgumentException("Modinfo file name is not valid");
+		else if(!isNameValid())
+			throw new IllegalArgumentException("Mod name is not valid");
+		
+		File modinfoFile = getModinfoFile();		
+		
+		FileWriter writer = new FileWriter(modinfoFile);
+		new Gson().toJson(getModInfo(), writer);
+		writer.close();
 	}
 }
