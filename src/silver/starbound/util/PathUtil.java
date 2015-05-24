@@ -220,4 +220,52 @@ public class PathUtil {
 				return null;
 		}
 	}
+	/**
+	 * Get the relative path from the source file to the target file.
+	 * 
+	 * @param source The source file
+	 * @param target The target file
+	 * @return A relative path from the source file to the target file
+	 */
+	public static String getRelativePath(File source, File target){
+		if(target == null)
+			return null;
+		if(source == null)
+			return target.getAbsolutePath();
+		
+		source = new File(source.getAbsolutePath());
+		target = new File(target.getAbsolutePath());
+
+		File sourceParentPath = source;
+		File targetParentPath = target;
+		if(!source.isDirectory())
+			sourceParentPath = sourceParentPath.getParentFile();
+		if(!target.isDirectory())
+			targetParentPath = targetParentPath.getParentFile();
+		
+		int sourceStepsBack = 0;
+		while(!sourceParentPath.equals(targetParentPath) &&
+				(targetParentPath.getParentFile() != null
+				|| sourceParentPath.getParentFile() != null)){
+			if(targetParentPath.getAbsolutePath().length() > sourceParentPath.getAbsolutePath().length())
+				targetParentPath = targetParentPath.getParentFile();
+			else{
+				sourceParentPath = sourceParentPath.getParentFile();
+				sourceStepsBack++;
+			}
+		}
+		
+		// No common parent
+		if(!sourceParentPath.equals(targetParentPath))
+			return target.getAbsolutePath();
+		
+		String backDirs = File.separator;
+		for (int i = 0; i < sourceStepsBack; i++) {
+			backDirs += ".." + File.separator;
+		}
+		
+		String targetDirections = target.getAbsolutePath().substring(targetParentPath.getAbsolutePath().length() + 1);
+		
+		return backDirs + targetDirections;
+	}
 }
