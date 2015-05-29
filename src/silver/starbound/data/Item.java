@@ -184,10 +184,22 @@ public class Item extends StarboundObject {
 	 */
 	@ExposeMethodResult(conflictResolution = ConflictResolutionStrategy.OVERWRITE, value = "inventoryIcon")
 	public String getInventoryIcon(){
+		String iconFileName;
 		if(getFile() != null && getInventoryIconFile() != null)
-			return PathUtil.getRelativePath(getFile(), getInventoryIconFile());
+			iconFileName = PathUtil.getRelativePath(getFile(), getInventoryIconFile());
 		else
-			return _inventoryIconFileName;
+			iconFileName = _inventoryIconFileName;
+		
+		if(iconFileName != null){
+			// Starbound does not allow .. path operators
+			if(iconFileName.contains("..") && getInventoryIconFile() != null)
+				iconFileName = getInventoryIconFile().getAbsolutePath();
+			
+			// The character \ is invalid as far as starbound cares
+			iconFileName = iconFileName.replace("\\", "/");
+		}
+		
+		return iconFileName;
 	}
 
 	@Override
