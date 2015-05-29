@@ -1,6 +1,8 @@
 package silver.starbound.data;
 
+import io.gsonfire.PostProcessor;
 import io.gsonfire.annotations.ExposeMethodResult;
+import io.gsonfire.annotations.ExposeMethodResult.ConflictResolutionStrategy;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,7 +14,10 @@ import java.util.Collection;
 import silver.starbound.util.JsonUtil;
 import silver.starbound.util.PathUtil;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
@@ -87,6 +92,7 @@ public class Item extends StarboundObject {
 	@SerializedName("itemName")					private String _itemName;
 	@SerializedName("rarity")					private Rarity _rarity;
 												private transient File _inventoryIconFile;
+												private transient String _inventoryIconFileName;
 	@SerializedName("description")				private String _description;
 	@SerializedName("shortDescription")			private String _shortDescription;
 	@SerializedName("learnBlueprintsOnPickup")	private Collection<String> _blueprintsLearnedOnPickup;
@@ -176,14 +182,24 @@ public class Item extends StarboundObject {
 	 * 
 	 * @return The relative path to the icon file
 	 */
-	@ExposeMethodResult("inventoryIcon")
+	@ExposeMethodResult(conflictResolution = ConflictResolutionStrategy.OVERWRITE, value = "inventoryIcon")
 	public String getInventoryIcon(){
 		if(getFile() != null && getInventoryIconFile() != null)
 			return PathUtil.getRelativePath(getFile(), getInventoryIconFile());
 		else
-			return null;
+			return _inventoryIconFileName;
 	}
 
+	@Override
+	public void setFile(File file) {
+		boolean setInventoryName = getInventoryIconFile() == null;
+		String inventoryIconFileName = getInventoryIcon();
+		
+		super.setFile(file);
+		
+		if(setInventoryName)
+			setInventoryIcon(inventoryIconFileName);
+	}
 	/**
 	 * Set the name of the item.
 	 * 
@@ -249,8 +265,10 @@ public class Item extends StarboundObject {
 				file = file.getParentFile();
 			setInventoryIconFile(new File(file, inventoryIcon));
 		}
+		else{
+			_inventoryIconFileName = inventoryIcon;
+		}
 	}
-	
 
 	/**
 	 * A convience method for loading an item from file.
@@ -273,5 +291,24 @@ public class Item extends StarboundObject {
 			e.printStackTrace();
 			throw new IOException(e);
 		}
+	}
+	
+	/**
+	 * A json item post processor to expose set inventory icon.
+	 * 
+	 * @author SilverFishCat
+	 *
+	 */
+	public static class ItemPostProcessor implements PostProcessor<Item>{
+		@Override
+		public void postDeserialize(Item result, JsonElement src, Gson gson) {
+			JsonObject srcObject = src.getAsJsonObject();
+			if(srcObject.has("inventoryIcon")){
+				result.setInventoryIcon(srcObject.get("inventoryIcon").getAsString());
+			}
+		}
+
+		@Override
+		public void postSerialize(JsonElement result, Item src, Gson gson) { }
 	}
 }

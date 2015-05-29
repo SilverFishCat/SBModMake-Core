@@ -22,6 +22,7 @@
 
 package silver.starbound.util;
 
+import silver.starbound.data.Item;
 import io.gsonfire.GsonFireBuilder;
 
 import com.google.gson.Gson;
@@ -33,6 +34,7 @@ public class JsonUtil {
 		if(_gson == null)
 			_gson = new GsonFireBuilder()
 							.enableExposeMethodResult()
+							.registerPostProcessor(Item.class, new Item.ItemPostProcessor())
 							.createGsonBuilder()
 							.setPrettyPrinting()
 							.setVersion(1.1d)
