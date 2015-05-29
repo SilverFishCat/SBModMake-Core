@@ -267,7 +267,7 @@ public class Item extends StarboundObject {
 		
 		try {
 			Item result = JsonUtil.getGsonInstance().fromJson(new FileReader(file), Item.class);
-			result.setInventoryIconFile(file);
+			result.setFile(file);
 			return result;
 		} catch (JsonSyntaxException | JsonIOException | FileNotFoundException e) {
 			e.printStackTrace();
