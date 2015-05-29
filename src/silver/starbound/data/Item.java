@@ -204,8 +204,8 @@ public class Item extends StarboundObject {
 
 	@Override
 	public void setFile(File file) {
-		boolean setInventoryName = getInventoryIconFile() == null;
 		String inventoryIconFileName = getInventoryIcon();
+		boolean setInventoryName = getInventoryIconFile() == null;
 		
 		super.setFile(file);
 		
@@ -271,14 +271,20 @@ public class Item extends StarboundObject {
 	 * @param inventoryIcon The relative path to the icon file
 	 */
 	public void setInventoryIcon(String inventoryIcon){
-		File file = getFile();
-		if(file != null){
-			if(!file.isDirectory())
-				file = file.getParentFile();
-			setInventoryIconFile(new File(file, inventoryIcon));
+		if(inventoryIcon == null){
+			_inventoryIconFileName = null;
+			setInventoryIconFile(null);
 		}
 		else{
-			_inventoryIconFileName = inventoryIcon;
+			File file = getFile();
+			if(file != null){
+				if(!file.isDirectory())
+					file = file.getParentFile();
+				setInventoryIconFile(new File(file, inventoryIcon));
+			}
+			else{
+				_inventoryIconFileName = inventoryIcon;
+			}
 		}
 	}
 
@@ -297,6 +303,8 @@ public class Item extends StarboundObject {
 		
 		try {
 			Item result = JsonUtil.getGsonInstance().fromJson(new FileReader(file), Item.class);
+			if(result == null)
+				result = new Item();
 			result.setFile(file);
 			return result;
 		} catch (JsonSyntaxException | JsonIOException | FileNotFoundException e) {
